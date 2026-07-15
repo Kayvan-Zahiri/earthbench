@@ -1,0 +1,280 @@
+[
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_fetch"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_fetch",
+  "correct_tool": true,
+  "called_both": false,
+  "over_asked": false,
+  "fields_requested": [
+   "elevation"
+  ],
+  "fields_hallucinated": [],
+  "hallucination_rate": 0.0,
+  "key": "elevation@sf_marina",
+  "question": "elevation",
+  "site": "sf_marina"
+ },
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_fetch"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_fetch",
+  "correct_tool": true,
+  "called_both": false,
+  "over_asked": false,
+  "fields_requested": [
+   "elevation"
+  ],
+  "fields_hallucinated": [],
+  "hallucination_rate": 0.0,
+  "key": "elevation@paradise",
+  "question": "elevation",
+  "site": "paradise"
+ },
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_ask"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_ask",
+  "correct_tool": false,
+  "called_both": false,
+  "over_asked": true,
+  "fields_requested": [],
+  "fields_hallucinated": [],
+  "hallucination_rate": null,
+  "key": "locality@sf_marina",
+  "question": "locality",
+  "site": "sf_marina"
+ },
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_ask"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_ask",
+  "correct_tool": false,
+  "called_both": false,
+  "over_asked": true,
+  "fields_requested": [],
+  "fields_hallucinated": [],
+  "hallucination_rate": null,
+  "key": "locality@denver",
+  "question": "locality",
+  "site": "denver"
+ },
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_ask"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_ask",
+  "correct_tool": false,
+  "called_both": false,
+  "over_asked": true,
+  "fields_requested": [],
+  "fields_hallucinated": [],
+  "hallucination_rate": null,
+  "key": "locality@manhattan",
+  "question": "locality",
+  "site": "manhattan"
+ },
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_ask"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_ask",
+  "correct_tool": false,
+  "called_both": false,
+  "over_asked": true,
+  "fields_requested": [],
+  "fields_hallucinated": [],
+  "hallucination_rate": null,
+  "key": "flood_zone@guerneville",
+  "question": "flood_zone",
+  "site": "guerneville"
+ },
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_ask"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_ask",
+  "correct_tool": false,
+  "called_both": false,
+  "over_asked": true,
+  "fields_requested": [],
+  "fields_hallucinated": [],
+  "hallucination_rate": null,
+  "key": "flood_zone@sf_marina",
+  "question": "flood_zone",
+  "site": "sf_marina"
+ },
+ {
+  "expected_tool": "mireye_fetch",
+  "tools_called": [
+   "mireye_fetch",
+   "mireye_ask"
+  ],
+  "n_calls": 2,
+  "first_tool": "mireye_fetch",
+  "correct_tool": true,
+  "called_both": true,
+  "over_asked": false,
+  "fields_requested": [
+   "ground_elevation",
+   "base_flood_elevation",
+   "flood_zone"
+  ],
+  "fields_hallucinated": [
+   "ground_elevation",
+   "base_flood_elevation",
+   "flood_zone"
+  ],
+  "hallucination_rate": 1.0,
+  "key": "bfe_margin@guerneville",
+  "question": "bfe_margin",
+  "site": "guerneville"
+ },
+ {
+  "expected_tool": "mireye_ask",
+  "tools_called": [
+   "mireye_ask",
+   "mireye_fetch",
+   "mireye_fetch",
+   "mireye_ask"
+  ],
+  "n_calls": 4,
+  "first_tool": "mireye_ask",
+  "correct_tool": true,
+  "called_both": true,
+  "over_asked": false,
+  "fields_requested": [
+   "wildfire_hazard_potential",
+   "wildfire_risk_to_homes",
+   "fire_hazard_severity_zone",
+   "elevation",
+   "slope",
+   "aspect",
+   "land_cover",
+   "vegetation_type",
+   "distance_to_wildland_urban_interface",
+   "elevation",
+   "slope_degrees",
+   "aspect",
+   "lcms_class",
+   "tree_canopy_pct",
+   "ndvi_current",
+   "wildfire_annual_frequency",
+   "wildfire_hazard_potential"
+  ],
+  "fields_hallucinated": [
+   "wildfire_hazard_potential",
+   "wildfire_risk_to_homes",
+   "fire_hazard_severity_zone",
+   "slope",
+   "aspect",
+   "land_cover",
+   "vegetation_type",
+   "distance_to_wildland_urban_interface",
+   "aspect",
+   "wildfire_hazard_potential"
+  ],
+  "hallucination_rate": 0.5882352941176471,
+  "key": "wildfire_synthesis@oakland_hills_high",
+  "question": "wildfire_synthesis",
+  "site": "oakland_hills_high"
+ },
+ {
+  "expected_tool": "mireye_ask",
+  "tools_called": [
+   "mireye_ask",
+   "mireye_fetch",
+   "mireye_fetch"
+  ],
+  "n_calls": 3,
+  "first_tool": "mireye_ask",
+  "correct_tool": true,
+  "called_both": true,
+  "over_asked": false,
+  "fields_requested": [
+   "wildfire_hazard_potential",
+   "elevation",
+   "slope",
+   "aspect",
+   "land_cover",
+   "fire_history",
+   "distance_to_wildland",
+   "burn_probability",
+   "wildland_urban_interface",
+   "wildfire_annual_frequency",
+   "elevation",
+   "slope_degrees",
+   "aspect_degrees",
+   "lcms_class",
+   "tree_canopy_pct",
+   "ndvi_current",
+   "ndvi_change_5y"
+  ],
+  "fields_hallucinated": [
+   "wildfire_hazard_potential",
+   "slope",
+   "aspect",
+   "land_cover",
+   "fire_history",
+   "distance_to_wildland",
+   "burn_probability",
+   "wildland_urban_interface"
+  ],
+  "hallucination_rate": 0.47058823529411764,
+  "key": "wildfire_synthesis@paradise",
+  "question": "wildfire_synthesis",
+  "site": "paradise"
+ },
+ {
+  "expected_tool": "mireye_ask",
+  "tools_called": [
+   "mireye_ask"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_ask",
+  "correct_tool": true,
+  "called_both": false,
+  "over_asked": false,
+  "fields_requested": [],
+  "fields_hallucinated": [],
+  "hallucination_rate": null,
+  "key": "post_fire_fuel@paradise",
+  "question": "post_fire_fuel",
+  "site": "paradise"
+ },
+ {
+  "expected_tool": "mireye_ask",
+  "tools_called": [
+   "mireye_ask"
+  ],
+  "n_calls": 1,
+  "first_tool": "mireye_ask",
+  "correct_tool": true,
+  "called_both": false,
+  "over_asked": false,
+  "fields_requested": [],
+  "fields_hallucinated": [],
+  "hallucination_rate": null,
+  "key": "fhsz@oakland_hills_high",
+  "question": "fhsz",
+  "site": "oakland_hills_high"
+ }
+]
