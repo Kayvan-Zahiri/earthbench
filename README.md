@@ -30,8 +30,10 @@ Every number above is fetched live.
 
 1. **Plans fields from the catalog, not from guesses.** It reads `presets` and
    `interpretation_hints` off `/v1/meta/fields`. The benchmark below measured an
-   agent guessing field names wrong **21 times out of 39**, which is why this
-   step exists.
+   agent guessing field names wrong **21 times out of 39** when it had no way to
+   list them, which is why this step exists. The agent plans 6 fields and all 6
+   exist (P4) — a smaller and easier test than the benchmark's, not the same one
+   scored again.
 2. **Fetches all candidates in one call** via `POST /v1/fetch/batch`.
 3. **Applies the thresholds the hints state** instead of inventing its own
    (`slope_degrees`: *"Slope >15° materially raises wildfire spread risk"*).
@@ -97,7 +99,12 @@ python3 -m agent.regression  # the five properties, live
 ## The benchmark underneath
 
 Before the agent there was a benchmark: does Mireye's output survive contact with
-authorities outside it? It scores `/ask`, `/fetch` and the MCP server on tool
+authorities outside it? **Measured 2026-07-13 against the then-255-field catalog,
+before `/fetch/batch`, `/field-requests` and `interpretation_hints` shipped.** The
+agent numbers above are live as of 2026-08-05; these are not, and some of what
+they found has since been closed.
+
+It scores `/ask`, `/fetch` and the MCP server on tool
 choice, field selection, grounding and uncertainty, against CAL FIRE, the
 California Geological Survey, live FEMA NFHL and live USGS EPQS. 75 (question,
 site) pairs, deterministic headline numbers, with an LLM judge used only where a

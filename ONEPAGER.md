@@ -33,8 +33,8 @@ An agent that plans, fetches, decides, and refuses.
 
 1. **Plans fields from your catalog, not from guesses.** It reads `presets` and
    `interpretation_hints` off `/v1/meta/fields`. My benchmark measured an agent
-   guessing field names wrong **21 times out of 39**; this step is why that
-   number is now zero.
+   guessing field names wrong **21 times out of 39** when it had no way to list
+   them; planning from the catalog is why this agent invents none.
 2. **Batches candidates** through `POST /v1/fetch/batch`.
 3. **Applies the thresholds your hints state**, not thresholds it invented.
 4. **Will not call hazard from fuel proxies.** It requires an authoritative
@@ -62,8 +62,10 @@ Impervious." Tuning that away would hide the finding rather than fix it.
 
 Underneath sits the benchmark this grew out of: 75 (question, site) pairs scoring
 `/ask`, `/fetch` and the MCP server against outside authorities. It found Mireye
-**beats a no-data LLM 19-3 with zero false answers** — the core is strong. The
-findings are about the edges.
+**beats a no-data LLM 19-3 with zero false answers** — the core is strong; the
+findings are about the edges. Those figures were measured 2026-07-13 against the
+then-255-field catalog and predate `/fetch/batch` and `/field-requests`. The
+agent results above are live as of 2026-08-05.
 
 ## Who writes the cheque
 
