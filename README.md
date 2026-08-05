@@ -1,122 +1,138 @@
 # earthbench
 
-A grounding benchmark for [Mireye](https://www.mireye.com), whose pitch is that AI
-agents shouldn't guess about the physical world because Mireye gives them cited,
-federal-grade ground truth. 
+**An agent that prices wildfire risk on [Mireye](https://www.mireye.com) data, and
+refuses to answer when Mireye's data cannot support an answer.**
 
-It measures Mireye's `/ask` and `/fetch` endpoints and its MCP server along four axes
-(across nine question types and twelve coordinates), scored against authorities
-**outside** Mireye (CAL FIRE, the California Geological Survey, live FEMA NFHL, live
-USGS EPQS):
+Mireye's own `wildfire_underwrite` preset rates **Paradise, California as low
+fuel**. Paradise burned in the 2018 Camp Fire and 85 people died. CAL FIRE still
+rates it **Very High**. The preset is not wrong about the numbers — canopy really
+is 1%, NDVI really is 0.11 — it is wrong about what they mean. The town is bare
+*because* it burned.
 
-1. **Tool choice**: given the MCP's two tools, does an agent pick the right one, and
-   can it name the fields it needs?
-2. **Field selection**: does Mireye's own `/ask` planner pull the decisive field?
-3. **Grounding**: split in two:
-   - **faithfulness**: does the prose follow from the fields it cited?
-   - **correctness**: do the fields follow from the world?
-4. **Uncertainty**: does it refuse when it should, hedge when it should, and report
-   what it's missing?
+That is the failure this agent exists to not repeat.
 
-Plus a head-to-head: Mireye vs a raw LLM with no data, scored on the same oracles.
+```
+--- Paradise, CA (Camp Fire 2018)
+    canopy 1.0%   ndvi 0.109   cover Grass/Forb/Herb   slope 4.14
+    Very High — CAL FIRE Fire Hazard Severity Zone, the map California insurers
+    price against. Mireye's fuel proxies read low at this site and disagree
+    flag: canopy 1.0%, NDVI 0.109, cover 'Grass/Forb/Herb'. These values are
+    equally consistent with a burn scar, with bare ground that never carried
+    fuel, and with pavement. The catalog cannot separate them, so this is not
+    evidence of low hazard in either direction.
+    would change the answer: fire perimeter history, to tell a burn scar from
+    pavement
+```
 
-Every headline number is deterministic. An LLM judge grades the semantic questions a
-regex can't, and it is **only quoted after being validated against hand labels** (see
-[Judge](#the-judge)).
+Every number above is fetched live.
 
-The reasoning behind it, and what it means, is in [WRITEUP.md](./WRITEUP.md).
+## What it does
 
-## Headlines
+1. **Plans fields from the catalog, not from guesses.** It reads `presets` and
+   `interpretation_hints` off `/v1/meta/fields`. The benchmark below measured an
+   agent guessing field names wrong **21 times out of 39**, which is why this
+   step exists.
+2. **Fetches all candidates in one call** via `POST /v1/fetch/batch`.
+3. **Applies the thresholds the hints state** instead of inventing its own
+   (`slope_degrees`: *"Slope >15° materially raises wildfire spread risk"*).
+4. **Refuses to conclude hazard from fuel proxies.** It requires an authoritative
+   rating, finds Mireye has none, files a `POST /v1/field-requests` for the
+   missing fields, and falls back to CAL FIRE.
+5. **Says what would change its mind.**
 
-The full findings, and what they mean, are in [WRITEUP.md](./WRITEUP.md). In brief:
+## The finding that justifies step 4
 
-- **Where Mireye is strong.** It wins the head-to-head against a
-  no-data LLM **19-3**, never gave a false answer across 75 pairs, and hedges when it
-  should. The findings below are about the edges, not the core.
-- **The MCP has no field-discovery tool, and the agent pays for it.** With no way to
-  list the 255 fields, an agent guessing field names gets **54% of them wrong** (21 of
-  39), then falls back to `/ask`, where a shaky value can get restated with more
-  confidence. Exposing `/v1/meta/fields` as one more MCP tool would close most of this.
-- **On a couple of questions a no-data LLM does better, which points to a narrow bug.**
-  Asked "what city is this?", a raw model answers "San Francisco" and "Denver"
-  correctly, while Mireye returns `"Unincorporated"` for county-equivalent cities (SF,
-  Denver, Baltimore, St. Louis). The field is right for 24 of 28 cities, so the fix is
-  small.
-- **Federal-only sourcing leaves a structural gap in state-governed decisions.** In
-  California, the hazard maps that carry legal weight (CAL FIRE, CGS) are state-owned,
-  so an agent underwriting wildfire at Paradise gets a census-tract average where the
-  parcel-level answer is what matters.
+`wildfire_underwrite` is six fuel and terrain proxies with no hazard rating:
+`elevation`, `slope_degrees`, `lcms_class`, `tree_canopy_pct`, `ndvi_current`,
+`ndvi_change_5y`. There is no `fire_hazard_severity_zone`, no `burn_probability`
+and no `wildfire_risk_to_homes` among the 283 published fields.
 
-## Results
+Ranking on those proxies does not merely lose signal, **it inverts the order**.
+Measured live across eight sites:
 
-75 (question, site) pairs, `/ask` sampled k=3 (it is non-deterministic, see below).
+```
+canopy on Very High / High sites : [1.0, 15.0]                median 8.0%
+canopy on NonWildland sites      : [0.0, 1.0, 1.0, 2.0, 8.0]  median 1.0%
+ranges overlap: True
+```
 
-| axis | result |
-|---|---|
-| Head-to-head vs no-data LLM | Mireye **19-3** |
-| Correct answer/refuse behavior | 71/75 (**95%**) · **0 false answers** |
-| Hedged when it should | 24/25 (96%) |
-| `/ask` decisive-field recall | **1.000** |
-| `fema_flood_zone` correctness | 68/68 (100%) |
-| `political_locality` correctness | 32/50 (64%) |
-| MCP field-name hallucination | **21/39 (54%)** |
-| MCP over-ask on lookups | 5/8 |
+Two NonWildland sites carry **more** canopy than the least-treed Very High site.
+An underwriter ranking parcels on tree cover would rate Paradise safer than
+downtown Sacramento.
 
-**`/ask` is non-deterministic.** Identical question, identical coordinate, different
-field selections across calls. Stable on single-field lookups, unstable on the
-multi-field synthesis a real agent actually asks. For a product sold as *audit-ready*,
-a decision that doesn't reproduce is the finding that matters most.
+A related gap: the hint on `slope_degrees` tells you to *"combine with
+`lcms_class` and `dist_to_wui_m`"*. There is no `dist_to_wui_m`, or anything
+matching WUI, in the catalog. Distance to the wildland-urban interface is the
+central variable in wildfire underwriting and the documentation assumes it ships.
 
-Elevation correctness is left out of the table on purpose. Mireye's elevation is
-accurate: 9 of the 11 land sites agree with a live USGS query within 0.6 m, and the two
-that don't are steep hillsides where the DEM itself is least accurate (3DEP RMSE 0.82 m).
-The real elevation issue is *precision*, not accuracy: it's reported to the centimetre
-with no error bar, which reads as exact when it isn't.
+## The regression suite
 
-## Reproduce
+`agent/regression.py` runs the agent against oracles outside Mireye and asserts
+five properties. It runs live and currently passes all five.
+
+| property | what it pins |
+| --- | --- |
+| P1 refusal without a source | emits no rating at all when nothing can ground it |
+| P2 grounding matches oracle | never edits a regulatory class it was handed |
+| P3 flags every burned site | recall 3/3 on sites that actually burned |
+| P4 no invented field names | all 6 planned fields exist in the catalog |
+| OOS refuses outside CA | declines Superior, CO, where CAL FIRE has no jurisdiction |
+
+**P3 is deliberately not tuned.** The flag also fires on San Francisco, which has
+never burned. That is honest rather than fixable: on canopy, NDVI and
+`lcms_class`, a paved downtown and a burn scar are the same row — `lcms_class`
+calls both *"Barren or Impervious"*. Separating them needs fire perimeter
+history, which the catalog does not carry. Tuning the flag to hide that would be
+tuning away the finding.
+
+## Running it
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env      # add MIREYE_API_KEY; ANTHROPIC_API_KEY for judge + baseline
-
-python3 run.py                 # the four-axis run -> results/run.json
-python3 tool_choice_run.py     # the MCP tool-choice axis -> results/tool_choice.json
-python3 report.py              # summary
+export MIREYE_API_KEY=...
+python3 -m agent.demo        # four California parcels, live
+python3 -m agent.regression  # the five properties, live
 ```
 
-Oracles are queried live and independently, so the harness scores Mireye against
-something outside it, never against its own cache. `run.py --no-judge` runs the
-deterministic checks with no Anthropic key.
+## The benchmark underneath
 
-## The judge
+Before the agent there was a benchmark: does Mireye's output survive contact with
+authorities outside it? It scores `/ask`, `/fetch` and the MCP server on tool
+choice, field selection, grounding and uncertainty, against CAL FIRE, the
+California Geological Survey, live FEMA NFHL and live USGS EPQS. 75 (question,
+site) pairs, deterministic headline numbers, with an LLM judge used only where a
+regex cannot grade and only after validation against hand labels.
 
-The deterministic checks catch blatant failures; semantic ones ("is this an invented
-claim or a restated definition?") need judgment. So there's an LLM judge, and it is
-**never trusted on its own.** `label.py` collects human labels on a blind sample, and
-`report.py` withholds every judged number until `label.py --check` shows the judge
-agrees with the human at ≥0.8 per axis.
+| axis | result |
+|---|---|
+| Head-to-head vs a no-data LLM | Mireye **19-3** |
+| Correct answer/refuse behaviour | 71/75 (**95%**), **0 false answers** |
+| `/ask` decisive-field recall | **1.000** |
+| MCP field-name hallucination | **21/39 (54%)** |
+| `political_locality` correctness | 32/50 (64%) |
+
+**Mireye is strong at its core job.** It beats a no-data model 19-3 and never
+gave a false answer across 75 pairs. The findings are about the edges.
+
+**`/ask` is non-deterministic.** Identical question, identical coordinate,
+different field selections across calls. Stable on single-field lookups, unstable
+on the multi-field synthesis a real agent asks. For a product sold as
+*audit-ready*, a decision that does not reproduce is the finding that matters
+most.
+
+Full method and results: **[WRITEUP.md](./WRITEUP.md)**. Raw answers in
+[ALL_ANSWERS.md](./ALL_ANSWERS.md). The self-audit, including three findings that
+turned out to be wrong, in [AUDIT.md](./AUDIT.md).
+
+The benchmark is why the agent is shaped this way. Its finding #7 was that Mireye
+has no decision primitive — nothing that ranks, compares or refuses. The agent is
+the layer the benchmark showed was missing.
+
+## Reproducing the benchmark
 
 ```bash
-python3 label.py --n 15     # grade a sample yourself, blind to the judge
-python3 label.py --check    # judge-vs-human agreement, per axis
+cp .env.example .env      # MIREYE_API_KEY; ANTHROPIC_API_KEY for judge + baseline
+python3 run.py                 # four-axis run -> results/run.json
+python3 tool_choice_run.py     # MCP tool-choice axis -> results/tool_choice.json
+python3 report.py              # summary
 ```
-
-In this run, the judge did not clear that bar. I hand-labeled a sample, its agreement
-with my labels came in below 0.8, so every judged number is withheld and everything
-reported here comes from the deterministic checks against outside oracles. Validating
-the judge properly, with a larger blind labeled set, is future work.
-
-## What this does not measure
-
-- The sample is small (12 coordinates, 9 question types) and weighted toward California.
-- The LLM judge isn't validated, so its grounding numbers are withheld; everything
-  reported is deterministic.
-- The head-to-head uses one baseline model (Opus 4.8) on one day.
-- Latency and cost aren't measured.
-- The MCP tool descriptions are from `mireye_earth_mcp` 0.1.0; a newer release may read
-  differently.
-- `/ask` is non-deterministic, and the detailed checks score one sample per pair. The
-  stability spread reports how much any single sample can be trusted, but it's still one
-  sample.
-- This measures reasoning about places against outside oracles where they exist. It is
-  not a general audit of whether Mireye's underlying data is correct everywhere.

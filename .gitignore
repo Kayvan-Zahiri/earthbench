@@ -5,3 +5,4 @@ results/quick.json
 results/human_labels*.json
 results/judge_validation.json
 .venv/
+agent/.catalog.json
