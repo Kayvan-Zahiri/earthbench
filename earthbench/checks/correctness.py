@@ -64,6 +64,20 @@ def check_flood_zone(site, fetched: dict) -> dict | None:
     truth = federal.fema_flood_zone(site.lat, site.lng)
     if got is None and truth is None:
         return None
+    if truth is None:
+        # The live NFHL query came back empty, so there is nothing to score
+        # against. Marking this "incorrect" blames Mireye for the oracle being
+        # down: it took fema_flood_zone from 58/58 to 58/68 on the 2026-08-05
+        # run and read as a regression that had not happened.
+        return {
+            "field": "fema_flood_zone",
+            "expected": None,
+            "got": got,
+            "correct": None,
+            "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point",
+            "confidence": f.get("confidence"),
+            "oracle": "FEMA NFHL, queried live",
+        }
     return {
         "field": "fema_flood_zone",
         "expected": truth,

@@ -1,9 +1,12 @@
 """Thin client for Mireye's /v1/fetch and /v1/ask, plus free address geocoding."""
 
 import json
+import time
+import threading
 import os
 import pathlib
 import urllib.parse
+import urllib.error
 import urllib.request
 
 API = "https://api.mireye.com"
@@ -46,14 +49,43 @@ def _key() -> str:
     raise RuntimeError("MIREYE_API_KEY not set (env or .env)")
 
 
-def _post(path: str, payload: dict) -> dict:
+# The free plan allows 20 requests/minute. Without pacing, a full benchmark run
+# fires 225 requests as fast as it can and every one comes back 429, which used
+# to look like a completed run because each failure was caught per-sample.
+_RPM = 20
+_MIN_GAP = 60.0 / _RPM
+_rate_lock = threading.Lock()
+_last_call = 0.0
+
+
+def _throttle() -> None:
+    """Space calls to the documented rate limit, across threads."""
+    global _last_call
+    with _rate_lock:
+        gap = time.monotonic() - _last_call
+        if gap < _MIN_GAP:
+            time.sleep(_MIN_GAP - gap)
+        _last_call = time.monotonic()
+
+
+def _post(path: str, payload: dict, *, attempts: int = 4) -> dict:
     req = urllib.request.Request(
         f"{API}{path}",
         data=json.dumps(payload).encode(),
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {_key()}"},
     )
-    with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
-        return json.loads(resp.read())
+    for attempt in range(attempts):
+        _throttle()
+        try:
+            with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
+                return json.loads(resp.read())
+        except urllib.error.HTTPError as exc:
+            # 429 is the one worth waiting out; anything else is a real answer.
+            if exc.code != 429 or attempt == attempts - 1:
+                raise
+            wait = float(exc.headers.get("Retry-After") or 0) or _MIN_GAP * (2 ** attempt)
+            time.sleep(wait)
+    raise RuntimeError("unreachable")
 
 
 NOMINATIM = "https://nominatim.openstreetmap.org/search"

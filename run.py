@@ -25,7 +25,13 @@ from earthbench.fixtures.sites import BY_ID, SITES
 from earthbench.oracles import california, federal
 
 RESULTS = pathlib.Path("results")
-WORKERS = 4   # their API is free and in early access; be a good guest
+# Mireye's free plan allows 20 requests/minute. Four workers used to be fine and
+# now guarantees HTTP 429 on every call: a full run made 225 requests, every one
+# was refused, and the script still exited 0 having overwritten results/run.json
+# with 75 "all samples failed" records. Pace to the documented limit instead.
+WORKERS = 1
+RPM_LIMIT = 20
+MIN_INTERVAL = 60.0 / RPM_LIMIT   # seconds between requests
 
 # Head-to-head only runs where a question has ONE extractable value and an oracle.
 # The synthesis questions (wildfire, fuel) have no single right answer, so they are
@@ -164,6 +170,7 @@ def main():
           f"judge={'off' if args.no_judge else 'on'}\n")
 
     out = []
+    started = time.time()
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
         for i, rec in enumerate(pool.map(run_one, todo), 1):
             st = rec.get('stability') or {}
@@ -174,10 +181,33 @@ def main():
             print(f"  [{i:>3}/{len(todo)}] {rec['question']:<19}{rec['site']:<24}{flag}")
             out.append(rec)
 
+    # A run where everything failed must not look like a run that worked, and
+    # must never overwrite good results. The 429 run that prompted this printed
+    # "wrote results/run.json (75 records)" and exited 0.
+    failed = [r for r in out if r.get("error")]
+    if failed:
+        print(f"\n{len(failed)}/{len(out)} pairs failed.")
+        reasons = {}
+        for r in failed:
+            for e in (r.get("sample_errors") or [r.get("error")]):
+                reasons[str(e)[:80]] = reasons.get(str(e)[:80], 0) + 1
+        for msg, n in sorted(reasons.items(), key=lambda kv: -kv[1])[:3]:
+            print(f"    {n:>4}x  {msg}")
+
     RESULTS.mkdir(exist_ok=True)
     path = RESULTS / ("quick.json" if args.quick else "run.json")
+    if failed and len(failed) == len(out):
+        salvage = path.with_suffix(".failed.json")
+        salvage.write_text(json.dumps(out, indent=1))
+        print(f"\nEVERY pair failed, so {path} was left untouched.")
+        print(f"wrote {salvage} instead. Fix the cause and re-run.")
+        raise SystemExit(1)
+
     path.write_text(json.dumps(out, indent=1))
-    print(f"\nwrote {path}  ({len(out)} records)")
+    took = time.time() - started
+    print(f"\nwrote {path}  ({len(out)} records, {len(failed)} failed, {took/60:.1f} min)")
+    if failed:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

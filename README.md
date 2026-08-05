@@ -99,37 +99,39 @@ python3 -m agent.regression  # the five properties, live
 ## The benchmark underneath
 
 Before the agent there was a benchmark: does Mireye's output survive contact with
-authorities outside it? **Measured 2026-07-13 against the then-255-field catalog,
-before `/fetch/batch`, `/field-requests` and `interpretation_hints` shipped.** The
-agent numbers above are live as of 2026-08-05; these are not, and some of what
-they found has since been closed.
-
-It scores `/ask`, `/fetch` and the MCP server on tool
+authorities outside it? It scores `/ask`, `/fetch` and the MCP server on tool
 choice, field selection, grounding and uncertainty, against CAL FIRE, the
 California Geological Survey, live FEMA NFHL and live USGS EPQS. 75 (question,
-site) pairs, deterministic headline numbers, with an LLM judge used only where a
-regex cannot grade and only after validation against hand labels.
+site) pairs.
 
-| axis | result |
-|---|---|
-| Head-to-head vs a no-data LLM | Mireye **19-3** |
-| Correct answer/refuse behaviour | 71/75 (**95%**), **0 false answers** |
-| `/ask` decisive-field recall | **1.000** |
-| MCP field-name hallucination | **21/39 (54%)** |
-| `political_locality` correctness | 32/50 (64%) |
+**Re-run live on 2026-08-05** against the current 283-field catalog, 43 minutes,
+0 failed pairs:
 
-**Mireye is strong at its core job.** It beats a no-data model 19-3 and never
-gave a false answer across 75 pairs. The findings are about the edges.
+| axis | 2026-07-13 | 2026-08-05 |
+|---|---|---|
+| Correct answer/refuse behaviour | 71/75 (95%) | **71/75 (95%)** |
+| False answers | 0 | **0** |
+| Hedged when it should | 24/25 (96%) | **25/25 (100%)** |
+| `/ask` decisive-field recall | 1.000 | **1.000** |
+| `fema_flood_zone` correctness | 68/68 (100%) | **58/58 (100%)** |
+| `political_locality` correctness | 32/50 (64%) | **26/50 (52%)** |
 
-**`/ask` is non-deterministic.** Identical question, identical coordinate,
-different field selections across calls. Stable on single-field lookups, unstable
-on the multi-field synthesis a real agent asks. For a product sold as
-*audit-ready*, a decision that does not reproduce is the finding that matters
-most.
+**`/ask` is still non-deterministic.** Identical question, identical coordinate,
+different field selections across calls. For a product sold as *audit-ready*, a
+decision that does not reproduce is the finding that matters most.
 
-Full method and results: **[WRITEUP.md](./WRITEUP.md)**. Raw answers in
-[ALL_ANSWERS.md](./ALL_ANSWERS.md). The self-audit, including three findings that
-turned out to be wrong, in [AUDIT.md](./AUDIT.md).
+**`political_locality` got worse, not better.** San Francisco, Denver and
+Baltimore still return `"Unincorporated"`, and Manhattan has changed from
+`"New York"` to `"Manhattan"`, which is new since July.
+
+Two caveats stated rather than buried. The head-to-head against a no-data LLM
+(Mireye won 19-3 in July) and the LLM judge both need an Anthropic key, which
+expired before this run, so **neither was re-measured** — those July figures
+stand unverified. And the 10 `fema_flood_zone` records excluded above are ones
+where the live FEMA oracle returned nothing; scoring them as Mireye errors is a
+bug this run exposed and [`correctness.py`](./earthbench/checks/correctness.py)
+now marks them skipped instead. Before that fix the same data read as an 85%
+regression that had not happened.
 
 The benchmark is why the agent is shaped this way. Its finding #7 was that Mireye
 has no decision primitive — nothing that ranks, compares or refuses. The agent is
