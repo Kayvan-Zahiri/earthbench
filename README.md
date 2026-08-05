@@ -87,6 +87,23 @@ calls both *"Barren or Impervious"*. Separating them needs fire perimeter
 history, which the catalog does not carry. Tuning the flag to hide that would be
 tuning away the finding.
 
+
+## Four agent patterns, in one system that had to work
+
+These get built as separate demo repos. Here they are load-bearing in something
+with a real failure mode, which is where the interesting parts show up.
+
+| pattern | where it lives | the part that is not decorative |
+| --- | --- | --- |
+| **Citation grounding** | `agent/hazard.py:53` — every `Verdict` carries a `basis` | the basis names the *source*, not the field. A rating sourced from Mireye's own proxies is not grounding, it is restating the input |
+| **Plan → act → decide, with refusal** | `agent/agent.py:60` `plan` → `:68` `gather` → `hazard.assess` → `:148` `run` | the loop can terminate in "no verdict". `Verdict.line()` prints `NO VERDICT — <why>` rather than a hedged number |
+| **Uncertainty → escalation** | `agent/agent.py:49` `missing_decisive`, `:93` `file_field_request` | it does not just flag low confidence. It identifies which field would settle the question, files a request for it, and records the ask when the plan cannot file one |
+| **LLM judge with validation** | `earthbench/judge.py:117` `validate`, gated in `report.py:90` | judged numbers are **withheld** below 0.8 agreement with hand labels. On the 2026-08-05 run every judge metric fell below that and was withheld, which is the point: an unvalidated judge is a number you cannot use |
+
+The last one is the one usually skipped. Running an LLM-as-judge is easy;
+knowing whether to believe it is the work, and the honest outcome is sometimes
+that you cannot.
+
 ## Running it
 
 ```bash
