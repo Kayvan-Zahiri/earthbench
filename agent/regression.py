@@ -94,7 +94,7 @@ def main() -> int:
     false_pos = scarred & _NEVER_BURNED
     p3 = not missed          # recall is the property; precision is reported
     if missed:
-        failures.append(f"P3: flag missed burned site(s) {sorted(missed)} — reads as reassurance")
+        failures.append(f"P3: flag missed burned site(s) {sorted(missed)}, reads as reassurance")
 
     # ---- P4 naming
     known = catalog.by_name()

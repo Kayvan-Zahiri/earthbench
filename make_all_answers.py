@@ -1,4 +1,4 @@
-"""Generate ALL_ANSWERS.md — every question, every site, every answer.
+"""Generate ALL_ANSWERS.md: every question, every site, every answer.
 
     python3 make_all_answers.py
 
@@ -37,7 +37,7 @@ OUTCOMES = {
 
 def fmt(v):
     if v is None:
-        return "—"
+        return "n/a"
     return f"{v:.2f}" if isinstance(v, float) else str(v)
 
 
@@ -61,7 +61,7 @@ def main():
     ]
     for k in order:
         q = qt[k]
-        out.append(f"- [{q.id}](#{q.id}) — “{q.text}” · expect **{q.expect}** · "
+        out.append(f"- [{q.id}](#{q.id}) · “{q.text}” · expect **{q.expect}** · "
                    f"{len(byq.get(k, []))} sites")
     out.append("")
 
@@ -71,7 +71,7 @@ def main():
             continue
         q = qt[k]
         out += ["\n---\n", f"# {q.id}", "", f"**Question asked:** “{q.text}”", "",
-                f"**Correct behavior:** `{q.expect}` — {EXPECT_MEANS.get(q.expect, '')}", ""]
+                f"**Correct behavior:** `{q.expect}`, {EXPECT_MEANS.get(q.expect, '')}", ""]
         if q.decisive:
             out.append(f"**Decisive field(s):** `{'`, `'.join(sorted(q.decisive))}`\n")
         if q.note:
@@ -85,7 +85,7 @@ def main():
                 flags.append("**FALSE ANSWER**")
             if u.get("false_refusal"):
                 flags.append("false refusal")
-            out += [f"\n### {r['site']} — {mark}",
+            out += [f"\n### {r['site']} · {mark}",
                     f"*did: {u.get('behavior', '?')} · confidence: {r.get('confidence', '?')} · "
                     f"{r.get('n_citations', 0)} citations"
                     f"{' · ' + ', '.join(flags) if flags else ''}*", "",
@@ -107,13 +107,13 @@ def main():
                 out.append("")
                 for c in wrong:
                     out.append(f"- WRONG `{c['field']}`: got `{c.get('got')}`, "
-                               f"truth `{c.get('expected')}` — oracle: {c.get('oracle', '?')}")
+                               f"truth `{c.get('expected')}`, oracle: {c.get('oracle', '?')}")
             if r.get("data_gaps"):
                 out.append(f"\n- `data_gaps`: {json.dumps(r['data_gaps'])[:280]}")
             out.append("")
 
     DEST.write_text("\n".join(out))
-    print(f"wrote {DEST} — {len(recs)} pairs, {DEST.stat().st_size // 1024} KB")
+    print(f"wrote {DEST}: {len(recs)} pairs, {DEST.stat().st_size // 1024} KB")
 
 
 if __name__ == "__main__":

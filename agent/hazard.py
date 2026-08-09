@@ -56,8 +56,8 @@ class Verdict:
 
     def line(self) -> str:
         if not self.decided:
-            return f"NO VERDICT — {self.basis}"
-        return f"{self.rating} — {self.basis}"
+            return f"NO VERDICT: {self.basis}"
+        return f"{self.rating}: {self.basis}"
 
 
 def _val(fields: dict, name: str):

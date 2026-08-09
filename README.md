@@ -14,7 +14,7 @@ That is the failure this agent exists to not repeat.
 ```
 --- Paradise, CA (Camp Fire 2018)
     canopy 1.0%   ndvi 0.109   cover Grass/Forb/Herb   slope 4.14
-    Very High — CAL FIRE Fire Hazard Severity Zone, the map California insurers
+    Very High: CAL FIRE Fire Hazard Severity Zone, the map California insurers
     price against. Mireye's fuel proxies read low at this site and disagree
     flag: canopy 1.0%, NDVI 0.109, cover 'Grass/Forb/Herb'. These values are
     equally consistent with a burn scar, with bare ground that never carried
@@ -96,7 +96,7 @@ with a real failure mode, which is where the interesting parts show up.
 | pattern | where it lives | the part that is not decorative |
 | --- | --- | --- |
 | **Citation grounding** | `agent/hazard.py:53`; every `Verdict` carries a `basis` | the basis names the *source*, not the field. A rating sourced from Mireye's own proxies is not grounding, it is restating the input |
-| **Plan → act → decide, with refusal** | `agent/agent.py:60` `plan` → `:68` `gather` → `hazard.assess` → `:148` `run` | the loop can terminate in "no verdict". `Verdict.line()` prints `NO VERDICT — <why>` rather than a hedged number |
+| **Plan → act → decide, with refusal** | `agent/agent.py:60` `plan` → `:68` `gather` → `hazard.assess` → `:148` `run` | the loop can terminate in "no verdict". `Verdict.line()` prints `NO VERDICT: <why>` rather than a hedged number |
 | **Uncertainty → escalation** | `agent/agent.py:49` `missing_decisive`, `:93` `file_field_request` | it does not just flag low confidence. It identifies which field would settle the question, files a request for it, and records the ask when the plan cannot file one |
 | **LLM judge with validation** | `earthbench/judge.py:117` `validate`, gated in `report.py:90` | judged numbers are **withheld** below 0.8 agreement with hand labels. On the 2026-08-05 run every judge metric fell below that and was withheld, which is the point: an unvalidated judge is a number you cannot use |
 
