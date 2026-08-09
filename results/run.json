@@ -1050,9 +1050,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "X",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    }
   ],
   "head_to_head": {
@@ -1398,9 +1399,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "X",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    }
   ],
   "head_to_head": {
@@ -1908,9 +1910,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "X",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    },
    {
     "field": "wildfire_annual_frequency",
@@ -2284,9 +2287,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "AE",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    }
   ],
   "head_to_head": {
@@ -2601,9 +2605,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "X",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    }
   ],
   "head_to_head": {
@@ -4278,9 +4283,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "X",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    },
    {
     "field": "wildfire_annual_frequency",
@@ -5135,9 +5141,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "AE",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    }
   ],
   "judge": {
@@ -6455,9 +6462,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "X",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    },
    {
     "field": "wildfire_annual_frequency",
@@ -7147,9 +7155,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "X",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    }
   ],
   "judge": {
@@ -7355,9 +7364,10 @@
     "field": "fema_flood_zone",
     "expected": null,
     "got": "AE",
-    "correct": false,
+    "correct": null,
     "confidence": "high",
-    "oracle": "FEMA NFHL, queried live"
+    "oracle": "FEMA NFHL, queried live",
+    "skipped": "oracle unavailable: FEMA NFHL returned no zone for this point"
    }
   ],
   "judge": {

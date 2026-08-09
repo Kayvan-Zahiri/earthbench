@@ -161,4 +161,16 @@ cp .env.example .env      # MIREYE_API_KEY; ANTHROPIC_API_KEY for judge + baseli
 python3 run.py                 # four-axis run -> results/run.json
 python3 tool_choice_run.py     # MCP tool-choice axis -> results/tool_choice.json
 python3 report.py              # summary
+python3 rescore.py             # re-apply current check rules to a saved run
 ```
+
+## The rest of the writing
+
+| doc | what it is |
+| --- | --- |
+| [ONEPAGER.md](./ONEPAGER.md) | the one-pager: the problem, the agent, the finding |
+| [FEEDBACK.md](./FEEDBACK.md) | eight things Mireye could fix, ranked, verified live |
+| [WRITEUP.md](./WRITEUP.md) | what I built, what broke, what I got wrong |
+| [AUDIT.md](./AUDIT.md) | every claim, and the four I retracted after checking |
+| [FULL_REPORT.md](./FULL_REPORT.md) | the long version, with verbatim answers |
+| [ALL_ANSWERS.md](./ALL_ANSWERS.md) | all 75 pairs, every answer Mireye gave, unedited |
