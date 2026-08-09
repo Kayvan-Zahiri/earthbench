@@ -62,10 +62,9 @@ Impervious." Tuning that away would hide the finding rather than fix it.
 
 Underneath sits the benchmark this grew out of: 75 (question, site) pairs scoring
 `/ask`, `/fetch` and the MCP server against outside authorities. It found Mireye
-**beats a no-data LLM 19-3 with zero false answers**. The core is strong; the
-findings are about the edges. Those figures were measured 2026-07-13 against the
-then-255-field catalog and predate `/fetch/batch` and `/field-requests`. The
-agent results above are live as of 2026-08-05.
+**beats a no-data LLM 23-3 with zero false answers**. The core is strong; the
+findings are about the edges. The head-to-head was re-run 2026-08-08 and the
+rest measured 2026-08-05; the agent results above are live as of 2026-08-05.
 
 ## Who writes the cheque
 

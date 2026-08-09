@@ -132,6 +132,7 @@ site) pairs.
 | `/ask` decisive-field recall | 1.000 | **1.000** |
 | `fema_flood_zone` correctness | 68/68 (100%) | **58/58 (100%)** |
 | `political_locality` correctness | 32/50 (64%) | **26/50 (52%)** |
+| Head-to-head vs a no-data LLM | 19-3 | **23-3** (re-run 2026-08-08) |
 
 **`/ask` is still non-deterministic.** Identical question, identical coordinate,
 different field selections across calls. For a product sold as *audit-ready*, a
@@ -141,10 +142,15 @@ decision that does not reproduce is the finding that matters most.
 Baltimore and St. Louis still return `"Unincorporated"`, and Manhattan has
 changed from `"New York"` to `"Manhattan"`, which is new since July.
 
-Two caveats stated rather than buried. The head-to-head against a no-data LLM
-(Mireye won 19-3 in July) and the LLM judge both need an Anthropic key, which
-expired before this run, so **neither was re-measured**: those July figures
-stand unverified. And the 10 `fema_flood_zone` records excluded above are ones
+Two caveats stated rather than buried. The head-to-head needed an Anthropic key
+that had expired on 2026-08-05, so it was re-run on 2026-08-08 with the same
+model: **Mireye wins 23-3**, and all three losses are `political_locality` at
+SF Marina, SF Mission and Denver, where a model with no data at all gets the
+city right at high confidence and Mireye returns `"Unincorporated"` with a
+federal citation. Seven of the 48 pairs could not be scored because the saved
+oracle value was empty, and they are reported as `no_oracle` rather than as
+wins. The **LLM judge remains withheld**, not for want of a key but because it
+agreed with hand labels below 0.8. And the 10 `fema_flood_zone` records excluded above are ones
 where the live FEMA oracle returned nothing; scoring them as Mireye errors is a
 bug this run exposed and [`correctness.py`](./earthbench/checks/correctness.py)
 now marks them skipped instead. Before that fix the same data read as an 85%

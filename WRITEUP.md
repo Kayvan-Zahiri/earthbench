@@ -67,11 +67,17 @@ and NonWildland parcels, so a per-tract number can never separate them.
 On the 2026-08-05 re-run, Mireye never gave a false answer in 75 pairs, got the
 answer-or-refuse call right 71 of 75 times, and hedged 25 of 25 times it should have.
 
-Two figures here are from the 2026-07-13 run and were **not** re-measured, because the
-head-to-head needs an Anthropic key and mine expired: Mireye beat a no-data LLM 19-3,
-and that same LLM guessed 100 m of elevation at the SF Marina against a true 7.5 m.
-I have left them in because they are the strongest evidence that the moat is real, but
-they are July numbers and I am not claiming them as current.
+The head-to-head needed an Anthropic key that had expired, so I re-ran it on
+2026-08-08 against the same model. **Mireye wins 23-3.** The moat is real and it is
+not close: asked for elevation at the SF Marina the model guessed 90 m against a true
+7.52 m, and Mireye returned 7.53 m. Across ten elevation sites the model's median
+error was 79 m. It refused every one of the ten flood zone questions.
+
+All three losses are the same field. At SF Marina, SF Mission and Denver, a model with
+no data at all names the city correctly at high confidence, while Mireye returns
+`"Unincorporated"` with a federal citation attached. That is the sentence I would put
+in front of your next design partner: provenance did not prevent the error, it made it
+more credible.
 
 The product works. These are the edges.
 

@@ -9,8 +9,8 @@ First, the part that is easy to lose in a list of complaints: **Mireye works.**
 Across 75 (question, site) pairs it returned **zero false answers**, hedged on
 25/25 of the questions where it should have, and held decisive-field recall on
 `/ask` at 1.000, all re-confirmed on 2026-08-05. `fema_flood_zone` is 58/58
-correct against live FEMA. It also beat a no-data LLM 19-3 in July, though that
-comparison was not re-run. When it does not know, it usually says so.
+correct against live FEMA. Against a no-data LLM it wins 23-3,
+re-run 2026-08-08. When it does not know, it usually says so.
 Everything below is about the edges.
 
 **1. `wildfire_underwrite` is six fuel proxies and no hazard rating, and it
