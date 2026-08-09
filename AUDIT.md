@@ -8,7 +8,7 @@ after checking. Two of them were the benchmark's fault, not Mireye's.
 
 ---
 
-## Verified — safe to state
+## Verified: safe to state
 
 **1. Mireye carries no California state hazard layers.**
 Grepped all 255 fields in the live catalog (`api.mireye.com/v1/meta/fields`, v0.14.0).
@@ -29,7 +29,7 @@ rates **NonWildland**. FEMA NRI is published per tract, so Mireye returns the
 identical number (0.001982) to both. No post-processing of Mireye's data can
 recover the distinction, because the information is not in it.
 *Scope note: this is an existence proof, from a 15-point transect. One collision is
-sufficient to prove non-recoverability. Do not quote "2 of 7 tracts" as a rate — the
+sufficient to prove non-recoverability. Do not quote "2 of 7 tracts" as a rate: the
 transect was not designed to measure prevalence.*
 
 **4. `political_locality` fails for county-equivalent cities.**
@@ -38,20 +38,20 @@ Across 28 major US cities, 4 fail: **San Francisco, Denver, Baltimore, St. Louis
 (~2.4M residents). All four are cities that are their own county-equivalent
 (two consolidated city-counties, two independent cities). The other 24 resolve
 correctly.
-*Honest limits: the field mostly works — 24/28. And the mechanism is narrower than
+*Honest limits: the field mostly works, 24/28. And the mechanism is narrower than
 "consolidated city-counties," because Philadelphia, Nashville, New Orleans, Honolulu
 and Indianapolis are also consolidated or coextensive and resolve fine. Root cause
 inside Overture's division hierarchy was not chased. Say so.*
 
 **5. A raw LLM with no data beats Mireye on that question.**
 Opus 4.8, no tools, no lookups: `"San Francisco"` 5/5 trials at high confidence;
-`"Denver"` 5/5 at high confidence. Mireye returns `"Unincorporated"` — with a
+`"Denver"` 5/5 at high confidence. Mireye returns `"Unincorporated"`, with a
 federal citation attached. The citation makes the wrong answer *more* credible than
 the right guess.
 
 **6. Mireye's moat is real, and the same table proves it.**
 Same model, same conditions, asked for elevation at the SF Marina: **100 m**
-(true value 7.5 m — it confused the Marina with Pacific Heights). Mireye: **7.53 m**.
+(true value 7.5 m, it confused the Marina with Pacific Heights). Mireye: **7.53 m**.
 Asked for a FEMA flood zone, the model refuses outright. Over the full run Mireye
 wins 17 head-to-heads and loses 3.
 
@@ -68,7 +68,7 @@ Identical question, identical coordinate, k=4 calls. 3 of 6 cases returned
 | `post_fire_fuel @ paradise` | 3 | 0.67 |
 | `wildfire_synthesis @ oakland_hills_high` | 3 | 0.64 |
 
-Single-field lookups are perfectly stable. **Multi-field synthesis is not** — the
+Single-field lookups are perfectly stable. **Multi-field synthesis is not**: the
 compound questions a real agent actually asks. On one wildfire underwriting query,
 separate calls pulled `nearest_fire_station_distance_m`, then
 `primary_building_footprint_sqm` + `primary_building_height_m` +
@@ -80,27 +80,27 @@ not an audit trail.
 **8. `data_gaps` reports missing *values*, not missing *coverage*.**
 It populates correctly when a source returns null (verified on flood zone, BFE, and
 an out-of-bounds ocean coordinate). It populated **0/12** times on the CAL FIRE
-question — a real coverage gap. An agent has no programmatic way to learn that an
+question, a real coverage gap. An agent has no programmatic way to learn that an
 entire dataset is absent.
 
 **9. Elevation is reported to a precision its source cannot support.**
 USGS 3DEP 1/3 arc-second seamless DEM: **0.82 m RMSE** across CONUS as of 2022,
 measured against ~25,000 NOAA NGS OPUS points, and varying substantially by
 location ([USGS](https://www.usgs.gov/faqs/what-vertical-accuracy-3d-elevation-program-3dep-dems)).
-Mireye reports elevation to the centimetre — their own homepage prints
-`13.15 meters` — with **no error bar anywhere in the field envelope.**
+Mireye reports elevation to the centimetre: their own homepage prints
+`13.15 meters`, with **no error bar anywhere in the field envelope.**
 
 **10. There is no decision primitive.**
 `/ask` and `/fetch` both take a single coordinate. No ranking, scoring,
 thresholding, or comparison exists anywhere in the product. Their page named
 "Compare" compares *Mireye against an LLM*, not one site against another. Asked to
-compare two lots, `/ask` refuses — but with the *wrong reason*: it reports the
+compare two lots, `/ask` refuses, but with the *wrong reason*: it reports the
 question as unanswerable from its datasets, when the datasets are fine and the
 limitation is the API shape. A misdiagnosed refusal teaches an agent the wrong
 lesson.
 
 **11. The MCP funnels agents into the product's worst failure mode.**
-Tool descriptions taken verbatim from `mireye_earth_mcp` 0.1.0 — rewriting them
+Tool descriptions taken verbatim from `mireye_earth_mcp` 0.1.0, rewriting them
 would have measured the rewriter's prompt engineering, not Mireye's MCP.
 
 - `mireye_fetch` takes field names out of a **255-field catalogue, and the MCP
@@ -108,10 +108,10 @@ would have measured the rewriter's prompt engineering, not Mireye's MCP.
   token, and is not wired in. So the agent guesses.
 - **54% of the field names it requests are not real fields** (21 of 39).
 - Those split cleanly into two classes:
-  - **7 name failures** — the field exists, the guess was near: `slope` for
+  - **7 name failures**: the field exists, the guess was near: `slope` for
     `slope_degrees`, `flood_zone` for `fema_flood_zone`, `ground_elevation` for
     `elevation`. **One new MCP tool closes all of these.**
-  - **8 coverage failures** — no such field exists anywhere. Asked to underwrite
+  - **8 coverage failures**: no such field exists anywhere. Asked to underwrite
     wildfire, the agent reached unprompted for `fire_hazard_severity_zone`,
     `burn_probability`, `fire_history`, `wildland_urban_interface`. **It found the
     CAL FIRE gap by trying to do the job**, independently of finding #1, which came
@@ -127,7 +127,7 @@ tool → field-name guessing → forced fallback to `ask` → error amplificatio
 
 ---
 
-## Retracted — claimed, then disproved by checking
+## Retracted: claimed, then disproved by checking
 
 **R1. "Systematic planner miss: `fema_base_flood_elevation` missed at 12/12 sites."**
 **False, and it was the benchmark's fault.** `fields_used` only lists fields that
@@ -140,7 +140,7 @@ in the entire run. It explains that riverine AE zones encode BFE in a separate f
 profile line layer rather than the area polygon, states plainly that it **cannot**
 compute a freeboard margin, drops to `confidence: low`, and directs the user to a
 licensed floodplain manager or a formal Elevation Certificate. On the hardest,
-most precision-sensitive question in the benchmark — designed as a trap — Mireye
+most precision-sensitive question in the benchmark, designed as a trap, Mireye
 passed. `checks/selection.py` was fixed to count fields attempted-but-null.
 
 **R2. "`data_gaps` is never populated."**
@@ -160,7 +160,7 @@ passed. `checks/selection.py` was fixed to count fields attempted-but-null.
 2. Selection scored off `fields_used` alone, punishing the planner for missing
    *data*. Fixed (see R1). **This bug was slandering the system under test.**
 3. Selection penalized correct refusals with `decisive_recall = 0.0`. Fixed.
-4. The whole harness ran one sample per pair — invalid, given finding #7. Now
+4. The whole harness ran one sample per pair, which is invalid given finding #7. Now
    samples k=3 and reports the spread.
 5. `DEM_VERTICAL_RMSE_M` was hardcoded from memory. Now cited.
 

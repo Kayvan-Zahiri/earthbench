@@ -1,4 +1,4 @@
-# earthbench — an agent that refuses to price what it cannot see
+# earthbench: an agent that refuses to price what it cannot see
 
 **Repo:** https://github.com/Kayvan-Zahiri/earthbench · **Kayvan Zahiri**, San Francisco
 
@@ -44,7 +44,7 @@ An agent that plans, fetches, decides, and refuses.
 
 On Paradise it returns Very High, states that Mireye's proxies disagree, and
 explains that canopy 1% / NDVI 0.11 / "Grass/Forb/Herb" is equally consistent
-with a burn scar, bare ground and pavement — so it is not evidence of low hazard
+with a burn scar, bare ground and pavement, so it is not evidence of low hazard
 in either direction.
 
 ## Why you can believe it
@@ -57,12 +57,12 @@ CAL FIRE has no jurisdiction.
 
 One property is deliberately **not** tuned. The burn-scar flag also fires on San
 Francisco, which never burned, because on canopy, NDVI and `lcms_class` a paved
-downtown and a burn scar are the same row — `lcms_class` calls both "Barren or
+downtown and a burn scar are the same row: `lcms_class` calls both "Barren or
 Impervious." Tuning that away would hide the finding rather than fix it.
 
 Underneath sits the benchmark this grew out of: 75 (question, site) pairs scoring
 `/ask`, `/fetch` and the MCP server against outside authorities. It found Mireye
-**beats a no-data LLM 19-3 with zero false answers** — the core is strong; the
+**beats a no-data LLM 19-3 with zero false answers**. The core is strong; the
 findings are about the edges. Those figures were measured 2026-07-13 against the
 then-255-field catalog and predate `/fetch/batch` and `/field-requests`. The
 agent results above are live as of 2026-08-05.
@@ -86,7 +86,7 @@ comparison, and the refusal.
 ## What I would want from Mireye
 
 `fire_hazard_severity_zone`, `burn_probability`, `wildfire_risk_to_homes`, and
-`dist_to_wui_m` — the last of which your own `slope_degrees` hint already tells
+`dist_to_wui_m`, the last of which your own `slope_degrees` hint already tells
 agents to combine with, though it does not exist. Fire perimeter history would
 let the agent separate a burn scar from a parking lot, which is the one thing
 standing between this and a clean answer.

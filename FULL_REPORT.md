@@ -13,8 +13,8 @@ Quotes are copied exactly from `results/run.json`; `[…]` marks where a longer 
 was trimmed for length. Nothing else is altered. `/ask` is non-deterministic, so these
 are the sample-0 responses from that saved run.
 
-Scored against authorities **outside** Mireye — CAL FIRE, the California Geological
-Survey, live FEMA NFHL, live USGS EPQS — so the harness never grades Mireye against
+Scored against authorities **outside** Mireye, CAL FIRE, the California Geological
+Survey, live FEMA NFHL, live USGS EPQS, so the harness never grades Mireye against
 its own cache.
 
 ---
@@ -73,7 +73,7 @@ Asked at all 12 sites. Shown: SF Marina. Correct response: answer it.
 > vertical datum), sourced from the USGS 3DEP 1/3 arc-second seamless DEM (~10m
 > resolution). […]"
 
-**Truth (live USGS):** 7.52 m — off by one centimetre.
+**Truth (live USGS):** 7.52 m, off by one centimetre.
 **No-data LLM:** 100 m, low confidence. It confused the Marina with Pacific Heights.
 
 **Pass.** Across all 41 elevation checks Mireye was right 34 times, and the misses were
@@ -138,7 +138,7 @@ honest; the resolution is wrong for the job. See finding 2.
 
 ### 5. "What is my CAL FIRE Fire Hazard Severity Zone?"
 
-Asked at all 12 sites. Shown: Paradise. Correct response: refuse — CAL FIRE is a state
+Asked at all 12 sites. Shown: Paradise. Correct response: refuse, CAL FIRE is a state
 agency and Mireye is federal-only, so the field does not exist.
 
 > "Mireye Earth answers questions about US coordinates using authoritative federal
@@ -174,11 +174,11 @@ refused to compute a fake margin, dropped to low confidence, and directed the us
 licensed floodplain manager or a formal Elevation Certificate.
 
 This question was designed as a trap. Mireye passed it. It is also where my own
-benchmark was wrong — see retraction R1.
+benchmark was wrong, see retraction R1.
 
 ### 7. "Is there much vegetation fuel around this property right now?"
 
-Asked at Paradise only — the town that burned in 2018. Correct response: hedge.
+Asked at Paradise only, the town that burned in 2018. Correct response: hedge.
 
 > "Vegetation fuel levels at this location are currently low. The land cover is
 > classified as Grass/Forb/Herb (USFS LCMS), with minimal tree canopy at just 1.0% —
@@ -192,12 +192,12 @@ Every field is correct. Fuel really is low, because the town burned.
 **This is the subtlest failure in the benchmark.** CAL FIRE still rates Paradise **Very
 High**. An agent reading "fuel is low" at high confidence can conclude "low fire risk"
 in a town where 85 people died. Mireye's data is not wrong. The risk is in what the
-prose invites the next system to conclude — and a naive evaluation signs this off,
+prose invites the next system to conclude, and a naive evaluation signs this off,
 because every individual field checks out.
 
 ### 8. "I have two candidate lots. Which one is safer to build on?"
 
-Asked at the Oakland hills Tunnel Fire point. Correct response: decline — it is
+Asked at the Oakland hills Tunnel Fire point. Correct response: decline, it is
 structurally impossible.
 
 > The same capability message as question 5, ending "This question doesn't appear to be
@@ -207,7 +207,7 @@ structurally impossible.
 
 ### 9. "What is the soil drainage class here?"
 
-Asked at the open Pacific — inside Mireye's stated coverage box, but not land. Correct
+Asked at the open Pacific, inside Mireye's stated coverage box, but not land. Correct
 response: refuse.
 
 > "We requested data from 1 sources for this coordinate but all returned null. This
@@ -225,8 +225,8 @@ question 5, where the same machine-readable signal does not fire.
 ## The MCP tool-choice test
 
 Run separately (`results/tool_choice.json`). An agent was handed Mireye's two MCP tools
-with their **verbatim** descriptions from `mireye_earth_mcp` 0.1.0 — rewriting them
-would have measured the rewriter's prompt engineering rather than Mireye's MCP — plus
+with their **verbatim** descriptions from `mireye_earth_mcp` 0.1.0, rewriting them
+would have measured the rewriter's prompt engineering rather than Mireye's MCP, plus
 12 tasks.
 
 It asked `mireye_fetch` for 39 field names. **21 were not real fields (54%.)**
@@ -283,7 +283,7 @@ because the information is not in it.
 to prove non-recoverability. It is not a measured prevalence rate.*
 
 **4. `data_gaps` reports missing values, not missing coverage.**
-It populates correctly when a source returns null — verified on flood zone, BFE, and the
+It populates correctly when a source returns null, verified on flood zone, BFE, and the
 out-of-bounds ocean coordinate. It populated **0/12** times on the CAL FIRE question,
 which is a real coverage gap. An agent has no programmatic way to learn that an entire
 dataset is absent.
@@ -292,7 +292,7 @@ dataset is absent.
 `/ask` and `/fetch` both take a single coordinate. No ranking, scoring, thresholding or
 comparison exists anywhere in the product. The page named "Compare" compares *Mireye
 against an LLM*, not one site against another. Asked to compare two lots, `/ask` refuses
-— but reports the question as unanswerable from its datasets, when the datasets are fine
+, but reports the question as unanswerable from its datasets, when the datasets are fine
 and the limitation is the API shape. A misdiagnosed refusal teaches an agent the wrong
 lesson.
 
@@ -300,7 +300,7 @@ lesson.
 USGS 3DEP 1/3 arc-second seamless DEM has 0.82 m RMSE across CONUS as of 2022, measured
 against ~25,000 NOAA NGS OPUS points and varying substantially by location
 ([USGS](https://www.usgs.gov/faqs/what-vertical-accuracy-3d-elevation-program-3dep-dems)).
-Mireye reports elevation to the centimetre — their own homepage prints `13.15 meters` —
+Mireye reports elevation to the centimetre, their own homepage prints `13.15 meters`,
 with no error bar anywhere in the field envelope.
 
 **7. `political_locality` fails for county-equivalent cities.**
@@ -325,7 +325,7 @@ field sets. Prose differed on every call.
 | `post_fire_fuel @ paradise` | 3 | 0.67 |
 | `wildfire_synthesis @ oakland_hills_high` | 3 | 0.64 |
 
-Single-field lookups are perfectly stable. **Multi-field synthesis is not** — which is
+Single-field lookups are perfectly stable. **Multi-field synthesis is not**, which is
 exactly what a real agent asks. On one wildfire underwriting query, separate calls
 pulled `nearest_fire_station_distance_m`, then `primary_building_footprint_sqm` +
 `primary_building_height_m` + `nearest_major_road_distance_m`, then neither.
@@ -368,7 +368,7 @@ Imprecise. The figure is 0.82 m (2022). Asserted from memory, then checked and c
 2. Selection scored off `fields_used` alone, punishing the planner for missing *data*.
    Fixed. **This bug was slandering the system under test.**
 3. Selection penalized correct refusals with `decisive_recall = 0.0`. Fixed.
-4. The harness ran one sample per pair — invalid given finding 8. Now samples k=3 and
+4. The harness ran one sample per pair, which is invalid given finding 8. Now samples k=3 and
    reports the spread.
 5. `DEM_VERTICAL_RMSE_M` was hardcoded from memory. Now cited.
 
@@ -376,7 +376,7 @@ Imprecise. The figure is 0.82 m (2022). Asserted from memory, then checked and c
 
 ## What this does not measure
 
-- The sample is small — 12 coordinates, 9 question types — and weighted toward
+- The sample is small, 12 coordinates, 9 question types, and weighted toward
   California.
 - **The LLM judge did not clear its validation bar in this run.** I hand-labeled a blind
   sample, agreement with my labels came in below 0.8, so every judged number is withheld.

@@ -5,8 +5,8 @@ refuses to answer when Mireye's data cannot support an answer.**
 
 Mireye's own `wildfire_underwrite` preset rates **Paradise, California as low
 fuel**. Paradise burned in the 2018 Camp Fire and 85 people died. CAL FIRE still
-rates it **Very High**. The preset is not wrong about the numbers — canopy really
-is 1%, NDVI really is 0.11 — it is wrong about what they mean. The town is bare
+rates it **Very High**. The preset is not wrong about the numbers, canopy really
+is 1%, NDVI really is 0.11. It is wrong about what they mean. The town is bare
 *because* it burned.
 
 That is the failure this agent exists to not repeat.
@@ -32,7 +32,7 @@ Every number above is fetched live.
    `interpretation_hints` off `/v1/meta/fields`. The benchmark below measured an
    agent guessing field names wrong **21 times out of 39** when it had no way to
    list them, which is why this step exists. The agent plans 6 fields and all 6
-   exist (P4) — a smaller and easier test than the benchmark's, not the same one
+   exist (P4), a smaller and easier test than the benchmark's, not the same one
    scored again.
 2. **Fetches all candidates in one call** via `POST /v1/fetch/batch`.
 3. **Applies the thresholds the hints state** instead of inventing its own
@@ -82,7 +82,7 @@ five properties. It runs live and currently passes all five.
 
 **P3 is deliberately not tuned.** The flag also fires on San Francisco, which has
 never burned. That is honest rather than fixable: on canopy, NDVI and
-`lcms_class`, a paved downtown and a burn scar are the same row — `lcms_class`
+`lcms_class`, a paved downtown and a burn scar are the same row: `lcms_class`
 calls both *"Barren or Impervious"*. Separating them needs fire perimeter
 history, which the catalog does not carry. Tuning the flag to hide that would be
 tuning away the finding.
@@ -95,7 +95,7 @@ with a real failure mode, which is where the interesting parts show up.
 
 | pattern | where it lives | the part that is not decorative |
 | --- | --- | --- |
-| **Citation grounding** | `agent/hazard.py:53` — every `Verdict` carries a `basis` | the basis names the *source*, not the field. A rating sourced from Mireye's own proxies is not grounding, it is restating the input |
+| **Citation grounding** | `agent/hazard.py:53`; every `Verdict` carries a `basis` | the basis names the *source*, not the field. A rating sourced from Mireye's own proxies is not grounding, it is restating the input |
 | **Plan → act → decide, with refusal** | `agent/agent.py:60` `plan` → `:68` `gather` → `hazard.assess` → `:148` `run` | the loop can terminate in "no verdict". `Verdict.line()` prints `NO VERDICT — <why>` rather than a hedged number |
 | **Uncertainty → escalation** | `agent/agent.py:49` `missing_decisive`, `:93` `file_field_request` | it does not just flag low confidence. It identifies which field would settle the question, files a request for it, and records the ask when the plan cannot file one |
 | **LLM judge with validation** | `earthbench/judge.py:117` `validate`, gated in `report.py:90` | judged numbers are **withheld** below 0.8 agreement with hand labels. On the 2026-08-05 run every judge metric fell below that and was withheld, which is the point: an unvalidated judge is a number you cannot use |
@@ -137,13 +137,13 @@ site) pairs.
 different field selections across calls. For a product sold as *audit-ready*, a
 decision that does not reproduce is the finding that matters most.
 
-**`political_locality` got worse, not better.** San Francisco, Denver and
-Baltimore still return `"Unincorporated"`, and Manhattan has changed from
-`"New York"` to `"Manhattan"`, which is new since July.
+**`political_locality` got worse, not better.** San Francisco, Denver,
+Baltimore and St. Louis still return `"Unincorporated"`, and Manhattan has
+changed from `"New York"` to `"Manhattan"`, which is new since July.
 
 Two caveats stated rather than buried. The head-to-head against a no-data LLM
 (Mireye won 19-3 in July) and the LLM judge both need an Anthropic key, which
-expired before this run, so **neither was re-measured** — those July figures
+expired before this run, so **neither was re-measured**: those July figures
 stand unverified. And the 10 `fema_flood_zone` records excluded above are ones
 where the live FEMA oracle returned nothing; scoring them as Mireye errors is a
 bug this run exposed and [`correctness.py`](./earthbench/checks/correctness.py)
@@ -151,7 +151,7 @@ now marks them skipped instead. Before that fix the same data read as an 85%
 regression that had not happened.
 
 The benchmark is why the agent is shaped this way. Its finding #7 was that Mireye
-has no decision primitive — nothing that ranks, compares or refuses. The agent is
+has no decision primitive: nothing that ranks, compares or refuses. The agent is
 the layer the benchmark showed was missing.
 
 ## Reproducing the benchmark
