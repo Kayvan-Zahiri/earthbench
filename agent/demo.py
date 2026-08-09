@@ -17,7 +17,12 @@ SITES = [
 
 def val(f, n):
     v = f.get(n)
-    return v.get("value") if isinstance(v, dict) else v
+    v = v.get("value") if isinstance(v, dict) else v
+    # Mireye returns full float precision, so ndvi_current arrives as
+    # 0.06319910287857056. Printing that implies a certainty the underlying
+    # raster does not have, and it is unreadable next to the rounded figures in
+    # the flag lines below.
+    return round(v, 3) if isinstance(v, float) else v
 
 def main():
     r = agent.run(SITES)
